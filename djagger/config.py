@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class DjaggerConfig(BaseModel):
     """Djagger configuration schema"""
-    global_prefix = Annotated[str, ""]
+    global_prefix: Annotated[str, ""]
 
 try:
     from django.conf import settings
