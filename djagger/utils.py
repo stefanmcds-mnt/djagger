@@ -5,12 +5,12 @@ The core module of Djagger project
 """
 
 from django.urls import URLPattern, URLResolver, get_resolver
-from django.urls.resolvers import RegexPattern, RoutePattern, _route_to_regex
+from django.urls.resolvers import RegexPattern, RoutePattern, _route_to_regex # type: ignore
 from rest_framework import fields, serializers
 from typing import List, Any
 from pydantic import create_model
 from pydantic._internal._model_construction import ModelMetaclass
-from pydantic.schema import get_flat_models_from_model, get_model_name_map, field_schema
+from pydantic.v1.schema import get_flat_models_from_model, get_model_name_map, field_schema
 from typing import List, Dict, Optional, Union, Tuple
 from decimal import Decimal
 import re
