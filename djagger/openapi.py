@@ -6,7 +6,7 @@ For official specs, see https://swagger.io/specification/
 
 from pydantic import BaseModel, Field, ValidationError
 #from pydantic.main import ModelMetaclass
-from pydantic.main import BaseModel as ModelMetaclass
+from pydantic._internal._model_construction import ModelMetaclass
 from rest_framework import serializers
 from typing import Optional, List, Dict, Union, Type, Any, cast
 from .serializers import SerializerConverter
@@ -232,7 +232,7 @@ class MediaType(BaseModel):
     def _from(cls, model: Any) -> "MediaType":
         """Generates an instance of MediaType from a pydantic model or from a rest_framework serializer"""
 
-        media = cls()
+        media = cls() # type: ignore
 
         if isinstance(
             model, (serializers.SerializerMetaclass, serializers.ListSerializer)
@@ -246,7 +246,7 @@ class MediaType(BaseModel):
         if not definitions:
             media.schema_ = schema
         else:
-            media.schema_ = Reference.dereference(schema, definitions)
+            media.schema_ = Reference.dereference(schema, definitions) # type: ignore
 
         # Generate example
         if callable(getattr(model, "example", None)):
@@ -326,18 +326,18 @@ class Parameter(BaseModel):
             location: Optional[str] = attr.location()
 
             param = cls(
-                name=schema.get("title", ""),
-                description=schema.get("description", ""),
-                in_=attr.location(),
+                name=schema.get("title", ""), # type: ignore
+                description=schema.get("description", ""), # type: ignore
+                in_=attr.location(), # type: ignore
                 required=True
                 if location == ParameterLocation.PATH
-                else schema.get("required", False),
+                else schema.get("required", False), # type: ignore
                 deprecated=schema.get("deprecated", False),
                 allowReserved=schema.get("allowReserved", False),
-                style=schema.get("style"),
-                explode=schema.get("explode", False),
-                schema_=schema,
-            )
+                style=schema.get("style"), # type: ignore
+                explode=schema.get("explode", False), # type: ignore
+                schema_=schema, # type: ignore
+            ) # type: ignore
             params.append(param)
 
         return params
@@ -367,11 +367,11 @@ class Response(BaseModel):
         response = cls(
             description=model.__doc__ if model.__doc__ else "",
             content={content_type: MediaType._from(model)},
-        )
+        ) # type: ignore
 
         if isinstance(model, ModelMetaclass):
             # Extract headers dict in the Response model Config
-            headers = getattr(model.Config, "headers", {})
+            headers = getattr(model.Config, "headers", {}) # type: ignore
             if headers and isinstance(headers, Dict):
                 response.headers = {}
                 for k, v in headers.items():
@@ -403,7 +403,7 @@ class Operation(BaseModel):
     def _extract_operation_id(self, view: Type, http_method: HttpMethod):
 
         operation_id = ViewAttributes.from_view(
-            view, ViewAttributes.api.OPERATION_ID, http_method
+            view, ViewAttributes.api.OPERATION_ID, http_method # type: ignore
         )
         assert isinstance(
             operation_id, (str, type(None))
@@ -413,7 +413,7 @@ class Operation(BaseModel):
     def _extract_external_docs(self, view: Type, http_method: HttpMethod):
 
         self.externalDocs = ViewAttributes.from_view(
-            view, ViewAttributes.api.EXTERNAL_DOCS, http_method
+            view, ViewAttributes.api.EXTERNAL_DOCS, http_method # type: ignore
         )
         assert isinstance(
             self.externalDocs, (Dict, type(None))
@@ -433,7 +433,7 @@ class Operation(BaseModel):
                 # only consider relevant for parameter attributes - attr name ending in '_params'
                 continue
 
-            if ViewAttributes.api.REQUEST_SCHEMA.value in attr:
+            if ViewAttributes.api.REQUEST_SCHEMA.value in attr: # type: ignore
                 # request body params handed by _extract_request_body()
                 continue
 
@@ -448,11 +448,11 @@ class Operation(BaseModel):
             ):
                 request_schema = SerializerConverter(s=request_schema).to_model()
 
-            self.parameters += Parameter.to_parameters(request_schema, attr)
+            self.parameters += Parameter.to_parameters(request_schema, attr) # type: ignore
 
     def _extract_tags(self, view: Type, http_method: HttpMethod):
 
-        tags = ViewAttributes.from_view(view, ViewAttributes.api.TAGS, http_method)
+        tags = ViewAttributes.from_view(view, ViewAttributes.api.TAGS, http_method) # type: ignore
 
         if not tags:
             try:
@@ -471,7 +471,7 @@ class Operation(BaseModel):
     def _extract_summary(self, view: Type, http_method: HttpMethod):
 
         summary = ViewAttributes.from_view(
-            view, ViewAttributes.api.SUMMARY, http_method
+            view, ViewAttributes.api.SUMMARY, http_method # type: ignore
         )
 
         if not summary:
@@ -488,7 +488,7 @@ class Operation(BaseModel):
     def _extract_description(self, view: Type, http_method: HttpMethod):
 
         description = ViewAttributes.from_view(
-            view, ViewAttributes.api.DESCRIPTION, http_method
+            view, ViewAttributes.api.DESCRIPTION, http_method # type: ignore
         )
         if not description:
             # Try to retrieve from method docstring
@@ -519,7 +519,7 @@ class Operation(BaseModel):
         """
 
         request_body = ViewAttributes.from_view(
-            view, ViewAttributes.api.REQUEST_SCHEMA, http_method
+            view, ViewAttributes.api.REQUEST_SCHEMA, http_method # type: ignore
         )
         if not request_body:
             return
@@ -550,7 +550,7 @@ class Operation(BaseModel):
         # }
         elif isinstance(request_body, Dict):
 
-            body = RequestBody()
+            body = RequestBody() # type: ignore
             body.description = request_body.pop("description", "")
             body.required = request_body.pop("required", False)
             content = {}
@@ -591,7 +591,7 @@ class Operation(BaseModel):
         responses = {}
 
         response_schema = ViewAttributes.from_view(
-            view, ViewAttributes.api.RESPONSE_SCHEMA, http_method
+            view, ViewAttributes.api.RESPONSE_SCHEMA, http_method # type: ignore
         )
 
         # When attribute is a pydantic model or serializer - assume 200 response only
@@ -662,7 +662,7 @@ class Operation(BaseModel):
     def _extract_security(self, view: Type, http_method: HttpMethod):
 
         self.security = ViewAttributes.from_view(
-            view, ViewAttributes.api.SECURITY, http_method
+            view, ViewAttributes.api.SECURITY, http_method # type: ignore
         )
         assert isinstance(
             self.servers, (List, type(None))
@@ -688,7 +688,7 @@ class Operation(BaseModel):
     def _extract_servers(self, view: Type, http_method: HttpMethod):
 
         self.servers = ViewAttributes.from_view(
-            view, ViewAttributes.api.SERVERS, http_method
+            view, ViewAttributes.api.SERVERS, http_method # type: ignore
         )
         assert isinstance(
             self.servers, (List, type(None))
@@ -699,7 +699,7 @@ class Operation(BaseModel):
     def _extract_deprecated(self, view: Type, http_method: HttpMethod):
 
         self.deprecated = ViewAttributes.from_view(
-            view, ViewAttributes.api.DEPRECATED, http_method
+            view, ViewAttributes.api.DEPRECATED, http_method # type: ignore
         )
         assert isinstance(
             self.deprecated, (bool, type(None))
@@ -713,11 +713,11 @@ class Operation(BaseModel):
 
         operation = cls(
             tags=[], summary="", description="", parameters=[], responses={}
-        )
+        ) # type: ignore
 
         # Exclude at the method-level if `<http_method>_djagger_exclude` is True
         exclude = ViewAttributes.from_view(
-            view, ViewAttributes.api.DJAGGER_EXCLUDE, http_method
+            view, ViewAttributes.api.DJAGGER_EXCLUDE, http_method # type: ignore
         )
         if exclude:
             return None
@@ -762,9 +762,9 @@ class Path(BaseModel):
         from the Djagger attributes set in the view.
         """
         path = cls(
-            summary=getattr(view, ViewAttributes.api.SUMMARY, None),
-            description=getattr(view, ViewAttributes.api.DESCRIPTION, None),
-        )
+            summary=getattr(view, ViewAttributes.api.SUMMARY, None), # type: ignore
+            description=getattr(view, ViewAttributes.api.DESCRIPTION, None), # type: ignore
+        ) # type: ignore
 
         if inspect.isclass(view):
 
@@ -866,7 +866,7 @@ class Components(BaseModel):
 
 class Document(BaseModel):
     openapi: str = "3.0.0"
-    info: Info = Info()
+    info: Info = Info() # type: ignore
     servers: List[Server] = []
     paths: Paths = {}
     components: Components = Components()
@@ -909,7 +909,7 @@ class Document(BaseModel):
             except AttributeError:
                 view = url_pattern.callback  # Function-based View / ViewSet
 
-            if ViewAttributes.from_view(view, ViewAttributes.api.DJAGGER_EXCLUDE.value):
+            if ViewAttributes.from_view(view, ViewAttributes.api.DJAGGER_EXCLUDE.value): # type: ignore
                 continue
 
             path = Path.create(view)
@@ -924,7 +924,7 @@ class Document(BaseModel):
         # Note that if tags supplied is empty, they will still be generated when
         # set as attributes in the individual API or endpoints
         tags_ = [
-            Tag(name=tag["name"], description=tag.get("description", ""))
+            Tag(name=tag["name"], description=tag.get("description", "")) # type: ignore
             for tag in tags
         ]
         info = Info(
@@ -934,7 +934,7 @@ class Document(BaseModel):
             termsOfService=terms_of_service,
             contact=Contact(name=contact_name, email=contact_email, url=contact_url),
             license=License(name=license_name, url=license_url),
-        )
+        ) # type: ignore
         document = cls(
             openapi=openapi,
             info=info,
@@ -943,7 +943,7 @@ class Document(BaseModel):
             tags=tags_,
             paths=paths,
             components=components,
-        )
+        ) # type: ignore
 
         document_dict = document.dict(by_alias=True, exclude_none=True)
         document_dict.update(kwargs)  # Non OAS specification keys

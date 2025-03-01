@@ -16,7 +16,7 @@ def set_response_schema_from_serializer_class(view):
     if not isinstance(view.serializer_class, (SerializerMetaclass, ListSerializer)):
         return
 
-    if hasattr(view, ViewAttributes.api.RESPONSE_SCHEMA):
+    if hasattr(view, ViewAttributes.api.RESPONSE_SCHEMA): # type: ignore
         # skip if response_schema was already set
         return
 

@@ -6,7 +6,6 @@ from ...openapi import Document
 
 import json
 
-
 class Command(BaseCommand):
 
     help = "Generates Djagger schema JSON file"

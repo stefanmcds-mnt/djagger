@@ -4,22 +4,16 @@ Utility functions
 The core module of Djagger project
 """
 
-from django.apps import apps
 from django.urls import URLPattern, URLResolver, get_resolver
 from django.urls.resolvers import RegexPattern, RoutePattern, _route_to_regex
 from rest_framework import fields, serializers
-from typing import List, Type, Callable, Any
+from typing import List, Any
 from pydantic import create_model
-from pydantic.main import ModelMetaclass, ModelField
-from pydantic.fields import UndefinedType
+from pydantic._internal._model_construction import ModelMetaclass
 from pydantic.schema import get_flat_models_from_model, get_model_name_map, field_schema
 from typing import List, Dict, Optional, Union, Tuple
 from decimal import Decimal
-from enum import Enum
-import warnings
 import re
-import uuid
-
 
 def get_app_name(module: str) -> str:
     """Given the value of ``__module__`` dunder attr, return the
@@ -33,7 +27,6 @@ def get_app_name(module: str) -> str:
     """
 
     return module.split(".")[0]
-
 
 def clean_resolver_url_pattern(route: str) -> str:
     """Cleans the full url path pattern from a url resolver into a OpenAPI schema url pattern.
@@ -52,7 +45,6 @@ def clean_resolver_url_pattern(route: str) -> str:
     """
     return re.sub(r"\%\(([a-zA-Z0-9\-\_]*)\)s", r"{\1}", route)
 
-
 def clean_route_url_pattern(route: str) -> str:
     """Converts a django path route string format into an openAPI route format.
 
@@ -70,7 +62,6 @@ def clean_route_url_pattern(route: str) -> str:
     """
     return re.sub(r"<[a-zA-Z0-9\-\_]*:([a-zA-Z0-9\-\_]*)>", r"{\1}", route)
 
-
 def clean_regex_string(s: str) -> str:
     """Converts regex string pattern for a path into OpenAPI format.
 
@@ -84,7 +75,6 @@ def clean_regex_string(s: str) -> str:
     s = s.replace("^", "").replace("\\", "")
     regex_pattern = r"\(\?P<([a-zA-Z0-9-_]*)>.*?\)"
     return re.sub(regex_pattern, r"{\1}", s).replace("?", "").replace("$", "")
-
 
 def get_pattern_str(pattern: Union[RegexPattern, RoutePattern]) -> str:
     """Given a URLPattern.pattern, or a URLResolver.pattern, return
@@ -103,7 +93,6 @@ def get_pattern_str(pattern: Union[RegexPattern, RoutePattern]) -> str:
     raise TypeError(
         f"pattern is of type {type(pattern)}. Needs to be RegexPattern or RoutePattern"
     )
-
 
 def list_urls(resolver: URLResolver, prefix="") -> List[Tuple[str, URLPattern]]:
 
@@ -125,7 +114,6 @@ def list_urls(resolver: URLResolver, prefix="") -> List[Tuple[str, URLPattern]]:
         results.append((clean_regex_string(url_pattern), url))
 
     return results
-
 
 def get_url_patterns(
     app_names: List[str], url_names: List[str] = []
@@ -163,7 +151,6 @@ def get_url_patterns(
 
     return results
 
-
 def schema_set_examples(schema: Dict, model: Any):
     """Check if a class has callable `example()` and if so, sets the schema 'example' field
     to the result of `example()` callable. The callable should return an instance of the pydantic base model type.
@@ -173,7 +160,6 @@ def schema_set_examples(schema: Dict, model: Any):
         if callable(model.example):
             schema["example"] = model.example().json(by_alias=True)
     return schema
-
 
 def infer_field_type(field: fields.Field):
     """Classifies DRF Field types into primitive python types or
@@ -218,7 +204,6 @@ def infer_field_type(field: fields.Field):
             return Dict[str, t]  # type: ignore
 
     return mappings.get(type(field))
-
 
 def field_to_pydantic_args(f: fields.Field) -> Dict:
     """Given a DRF Field, returns a dictionary of arguments to be passed
@@ -281,7 +266,6 @@ def field_to_pydantic_args(f: fields.Field) -> Dict:
         args["extra"]["choices"] = f.choices
 
     return args
-
 
 def schema_from_serializer(s: serializers.Serializer) -> ModelMetaclass:
 
@@ -350,7 +334,6 @@ def schema_from_serializer(s: serializers.Serializer) -> ModelMetaclass:
 
     return model
 
-
 def model_field_schemas(
     model: Any,
 ) -> List[Tuple[Dict, Dict]]:
@@ -374,7 +357,6 @@ def model_field_schemas(
         schemas.append((schema, definitions))
 
     return schemas
-
 
 # def extract_unique_schema(model : ModelMetaclass) -> dict:
 #     """ Calls the ``.schema()`` method with a custom ``ref_template`` containing uuid4.
