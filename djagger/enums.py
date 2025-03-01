@@ -10,7 +10,6 @@ DJAGGER_HTTP_METHODS = (
     "djagger_http_methods"  # FBV attribute name for http methods used in the FBV
 )
 
-
 class HttpMethod(str, Enum):
     GET = "get"
     POST = "post"
@@ -25,19 +24,13 @@ class HttpMethod(str, Enum):
     def values(cls):
         """Returns list of http method strings [ 'get', 'post', ... ]"""
         return [member.value for member in cls.__members__.values()]
-
-
 class ParameterLocation(str, Enum):
-
     PATH = "path"
     QUERY = "query"
     HEADER = "header"
     COOKIE = "cookie"
     BODY = "body"
-
-
 class DjaggerAttributeEnumType(str, Enum):
-
     """Enum type with helper class methods to initialize View-level and operation-level djagger view attributes as enums"""
 
     @classmethod
@@ -61,8 +54,6 @@ class DjaggerAttributeEnumType(str, Enum):
         }
 
         return location_map.get(self.name, None)
-
-
 class DjaggerViewAttributes:
     """Contains enums for djagger attributes that can be extracted from a view class of function"""
 

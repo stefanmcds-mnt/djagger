@@ -24,42 +24,31 @@ import inspect
 import warnings
 import copy
 
-
 class Logo(BaseModel):
     """Logo image for display on redoc documents."""
 
     url: Optional[str]
     altText: Optional[str]
-
-
 class ExternalDocs(BaseModel):
     description: Optional[str]
     url: str
-
-
 class Tag(BaseModel):
     """OpenAPI `tags`"""
 
     name: str
     description: Optional[str]
     externalDocs: Optional[ExternalDocs]
-
-
 class Contact(BaseModel):
     """OpenAPI `contact` object"""
 
     name: Optional[str]
     url: Optional[str]
     email: Optional[str]
-
-
 class License(BaseModel):
     """OpenAPI `license` object"""
 
     name: str
     url: Optional[str]
-
-
 class Info(BaseModel):
 
     """OpenAPI document information"""
@@ -74,8 +63,6 @@ class Info(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
-
-
 class TagGroup(BaseModel):
     """Tag grouping for ``x-tagGroups`` setting in redoc.
     This beyond the OpenAPI 3.0 specs but is included for redoc.
@@ -83,21 +70,16 @@ class TagGroup(BaseModel):
 
     name: str
     tags: List[str]
-
-
 class ServerVariable(BaseModel):
 
     enum: Optional[List[str]]
     default: str
     description: Optional[str]
-
-
 class Server(BaseModel):
 
     url: str
     description: Optional[str]
     variables: Optional[Dict[str, ServerVariable]]
-
 
 class Reference(BaseModel):
 
@@ -150,14 +132,12 @@ class Reference(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-
 class Example(BaseModel):
 
     summary: Optional[str]
     description: Optional[str]
     value: Optional[Any]
     externalValue: Optional[str]
-
 
 class Link(BaseModel):
 
@@ -168,7 +148,6 @@ class Link(BaseModel):
     description: Optional[str]
     server: Optional[Server]
 
-
 class OAuthFlow(BaseModel):
 
     authorizationUrl: Optional[str]
@@ -176,16 +155,13 @@ class OAuthFlow(BaseModel):
     refreshURL: Optional[str]
     scopes: Dict[str, str]
 
-
 class OAuthFlows(BaseModel):
     implicit: Optional[OAuthFlow]
     password: Optional[OAuthFlow]
     clientCredentials: Optional[OAuthFlow]
     authorizationCode: Optional[OAuthFlow]
 
-
 SecurityRequirement = Dict[str, List[str]]
-
 
 class SecurityScheme(BaseModel):
     class SecuritySchemeType(str, Enum):
@@ -203,9 +179,7 @@ class SecurityScheme(BaseModel):
     flows: Optional[OAuthFlows]
     openIdConnectUrl: Optional[str]
 
-
 Callback = Dict[str, "Path"]
-
 
 class Header(BaseModel):
     """The Header Object follows the structure of the Parameter Object with the following changes:
@@ -233,7 +207,6 @@ class Header(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-
 class Encoding(BaseModel):
 
     contentType: Optional[str]
@@ -241,7 +214,6 @@ class Encoding(BaseModel):
     style: Optional[str]
     explode: bool = False
     allowReserved: bool = False
-
 
 class MediaType(BaseModel):
 
@@ -292,7 +264,6 @@ class MediaType(BaseModel):
             media.encoding = encoding
 
         return media
-
 
 class Parameter(BaseModel):
     name: str
@@ -370,12 +341,10 @@ class Parameter(BaseModel):
 
         return params
 
-
 class RequestBody(BaseModel):
     description: Optional[str]
     content: Dict[str, MediaType] = {}
     required: bool = False
-
 
 class Response(BaseModel):
     description: str = ""
@@ -412,12 +381,9 @@ class Response(BaseModel):
 
         return response
 
-
 Responses = Dict[str, Response]
 
-
 class Operation(BaseModel):
-
     tags: Optional[List[str]]
     summary: Optional[str]
     description: Optional[str]
@@ -769,9 +735,7 @@ class Operation(BaseModel):
 
         return operation
 
-
 class Path(BaseModel):
-
     summary: Optional[str]
     description: Optional[str]
     get: Optional[Operation]
@@ -880,12 +844,9 @@ class Path(BaseModel):
 
         return path
 
-
 Paths = Dict[str, Path]
 
-
 class Components(BaseModel):
-
     schemas: Dict[str, Dict] = {}
     responses: Dict[str, Union[Response, Reference]] = {}
     parameters: Dict[str, Union[Parameter, Reference]] = {}
@@ -902,9 +863,7 @@ class Components(BaseModel):
         for field in self.__fields__.keys():
             getattr(self, field).update(copy.deepcopy(getattr(component, field)))
 
-
 class Document(BaseModel):
-
     openapi: str = "3.0.0"
     info: Info = Info()
     servers: List[Server] = []

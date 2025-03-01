@@ -8,7 +8,7 @@ class DjaggerConfig(BaseModel):
 
 try:
     from django.conf import settings
-    djagger_config = DjaggerConfig.parse_obj(settings.DJAGGER_CONFIG)
+    djagger_config = DjaggerConfig.model_validate(settings.DJAGGER_CONFIG)
 
 except (ImproperlyConfigured, AttributeError):
-    djagger_config = DjaggerConfig()
+    djagger_config = DjaggerConfig() # type: ignore

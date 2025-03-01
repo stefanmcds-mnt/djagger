@@ -5,7 +5,6 @@ from pydantic import BaseModel, create_model
 from decimal import Decimal
 from enum import Enum
 
-
 def field_to_pydantic_args(f: fields.Field) -> Dict:
 
     """Given a DRF Field, returns a dictionary of arguments to be passed

@@ -6,7 +6,6 @@ from typing import List
 from .enums import HttpMethod, ViewAttributes, DJAGGER_HTTP_METHODS
 import warnings
 
-
 def schema(methods: List[str], **attrs):
     """Decorator for function based views to set Djagger attributes into the view.
     A list of http method strings are needed to inform Djagger which endpoint schemas to create
@@ -39,7 +38,7 @@ def schema(methods: List[str], **attrs):
                 HttpMethod(method.lower())
             except ValueError:
                 raise ValueError(f"methods must be a list of string http methods e.g., {HttpMethod.values()}")
-        
+
         # Save the http methods used in the fbv as an attribute
         setattr(f, DJAGGER_HTTP_METHODS, methods)
 

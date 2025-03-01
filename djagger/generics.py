@@ -3,7 +3,6 @@
 from rest_framework.serializers import SerializerMetaclass, ListSerializer
 from .enums import ViewAttributes
 
-
 def set_response_schema_from_serializer_class(view):
     """Given a View, set ``response_schema`` if it has not been set to the value in ``serializer_class``
     , provided that the ``serializer_class`` value is a ``rest_framework.serializers.SerializerMetaclass`` type.
