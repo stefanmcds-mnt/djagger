@@ -1,7 +1,7 @@
 from rest_framework import fields, serializers
 from typing import List, Dict, Optional, Union, Tuple, Type, Any
 from pydantic._internal._model_construction import ModelMetaclass
-from pydantic import BaseModel, create_model
+from pydantic import ConfigDict, BaseModel, create_model
 from decimal import Decimal
 from enum import Enum
 
@@ -78,9 +78,7 @@ class SerializerConverter(BaseModel):
         serializers.Serializer,
         serializers.ListSerializer,
     ]
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def infer_field_type(cls, field: fields.Field, field_name: str):

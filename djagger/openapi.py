@@ -4,7 +4,7 @@ OpenAPI 3.0 Schema Objects
 For official specs, see https://swagger.io/specification/
 """
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ConfigDict, BaseModel, Field, ValidationError
 #from pydantic.main import ModelMetaclass
 from pydantic._internal._model_construction import ModelMetaclass
 from rest_framework import serializers
@@ -28,42 +28,40 @@ import copy
 class Logo(BaseModel):
     """Logo image for display on redoc documents."""
 
-    url: Optional[str]
-    altText: Optional[str]
+    url: Optional[str] = None
+    altText: Optional[str] = None
 class ExternalDocs(BaseModel):
-    description: Optional[str]
+    description: Optional[str] = None
     url: str
 class Tag(BaseModel):
     """OpenAPI `tags`"""
 
     name: str
-    description: Optional[str]
-    externalDocs: Optional[ExternalDocs]
+    description: Optional[str] = None
+    externalDocs: Optional[ExternalDocs] = None
 class Contact(BaseModel):
     """OpenAPI `contact` object"""
 
-    name: Optional[str]
-    url: Optional[str]
-    email: Optional[str]
+    name: Optional[str] = None
+    url: Optional[str] = None
+    email: Optional[str] = None
 class License(BaseModel):
     """OpenAPI `license` object"""
 
     name: str
-    url: Optional[str]
+    url: Optional[str] = None
 class Info(BaseModel):
 
     """OpenAPI document information"""
 
     title: str = "Djagger OpenAPI 3.0 Documentation"
     description: str = "OpenAPI 3.0 Document Description"
-    termsOfService: Optional[str]
-    contact: Optional[Contact]
-    license: Optional[License]
+    termsOfService: Optional[str] = None
+    contact: Optional[Contact] = None
+    license: Optional[License] = None
     version: str = "1.0.0"
-    x_logo: Optional[Logo] = Field(alias="x-logo")  # reDoc
-
-    class Config:
-        allow_population_by_field_name = True
+    x_logo: Optional[Logo] = Field(None, alias="x-logo")  # reDoc
+    model_config = ConfigDict(populate_by_name=True)
 class TagGroup(BaseModel):
     """Tag grouping for ``x-tagGroups`` setting in redoc.
     This beyond the OpenAPI 3.0 specs but is included for redoc.
@@ -73,14 +71,14 @@ class TagGroup(BaseModel):
     tags: List[str]
 class ServerVariable(BaseModel):
 
-    enum: Optional[List[str]]
+    enum: Optional[List[str]] = None
     default: str
-    description: Optional[str]
+    description: Optional[str] = None
 class Server(BaseModel):
 
     url: str
-    description: Optional[str]
-    variables: Optional[Dict[str, ServerVariable]]
+    description: Optional[str] = None
+    variables: Optional[Dict[str, ServerVariable]] = None
 
 class Reference(BaseModel):
 
@@ -129,38 +127,36 @@ class Reference(BaseModel):
                     schema[i] = cls.dereference(schema[i], definitions)
 
         return schema
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 class Example(BaseModel):
 
-    summary: Optional[str]
-    description: Optional[str]
-    value: Optional[Any]
-    externalValue: Optional[str]
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    value: Optional[Any] = None
+    externalValue: Optional[str] = None
 
 class Link(BaseModel):
 
-    operationRef: Optional[str]
-    operationId: Optional[str]
-    parameters: Optional[Dict[str, Any]]
-    requestBody: Optional[Any]
-    description: Optional[str]
-    server: Optional[Server]
+    operationRef: Optional[str] = None
+    operationId: Optional[str] = None
+    parameters: Optional[Dict[str, Any]] = None
+    requestBody: Optional[Any] = None
+    description: Optional[str] = None
+    server: Optional[Server] = None
 
 class OAuthFlow(BaseModel):
 
-    authorizationUrl: Optional[str]
-    tokenURL: Optional[str]
-    refreshURL: Optional[str]
+    authorizationUrl: Optional[str] = None
+    tokenURL: Optional[str] = None
+    refreshURL: Optional[str] = None
     scopes: Dict[str, str]
 
 class OAuthFlows(BaseModel):
-    implicit: Optional[OAuthFlow]
-    password: Optional[OAuthFlow]
-    clientCredentials: Optional[OAuthFlow]
-    authorizationCode: Optional[OAuthFlow]
+    implicit: Optional[OAuthFlow] = None
+    password: Optional[OAuthFlow] = None
+    clientCredentials: Optional[OAuthFlow] = None
+    authorizationCode: Optional[OAuthFlow] = None
 
 SecurityRequirement = Dict[str, List[str]]
 
@@ -189,44 +185,40 @@ class Header(BaseModel):
     3. All traits that are affected by the location MUST be applicable to a location of header (for example, style).
     """
 
-    description: Optional[str]
+    description: Optional[str] = None
     required: bool = False
     deprecated: bool = False
     allowEmptyValue: bool = False
-    style: Optional[str]
+    style: Optional[str] = None
     explode: bool = False
     allowReserved: bool = False
     schema_: Optional[Union[Dict, Reference]] = Field(
-        alias="schema"
+        None, alias="schema"
     )  # schema can take in a `.schema()` dict value from pydantic
-    example: Optional[Any]
-    examples: Optional[Dict[str, Union[Example, Reference]]]
+    example: Optional[Any] = None
+    examples: Optional[Dict[str, Union[Example, Reference]]] = None
     content: Optional[
         Dict[str, "MediaType"]
-    ]  # For more complex values - unused for now.
-
-    class Config:
-        allow_population_by_field_name = True
+    ] = None  # For more complex values - unused for now.
+    model_config = ConfigDict(populate_by_name=True)
 
 class Encoding(BaseModel):
 
-    contentType: Optional[str]
-    headers: Optional[Dict[str, Union[Header, Reference]]]
-    style: Optional[str]
+    contentType: Optional[str] = None
+    headers: Optional[Dict[str, Union[Header, Reference]]] = None
+    style: Optional[str] = None
     explode: bool = False
     allowReserved: bool = False
 
 class MediaType(BaseModel):
 
     schema_: Optional[Union[Dict, Reference]] = Field(
-        alias="schema"
+        None, alias="schema"
     )  # schema can take in a `.schema()` dict value from pydantic
-    example: Optional[Any]
-    examples: Optional[Dict[str, Union[Example, Reference]]]
-    encoding: Optional[Dict[str, Encoding]]
-
-    class Config:
-        allow_population_by_field_name = True
+    example: Optional[Any] = None
+    examples: Optional[Dict[str, Union[Example, Reference]]] = None
+    encoding: Optional[Dict[str, Encoding]] = None
+    model_config = ConfigDict(populate_by_name=True)
 
     @classmethod
     def _from(cls, model: Any) -> "MediaType":
@@ -269,22 +261,20 @@ class MediaType(BaseModel):
 class Parameter(BaseModel):
     name: str
     in_: str = Field(alias="in")
-    description: Optional[str]
+    description: Optional[str] = None
     required: bool = False
     deprecated: bool = False
     allowEmptyValue: bool = False
-    style: Optional[str]
+    style: Optional[str] = None
     explode: bool = False
     allowReserved: bool = False
     schema_: Optional[Union[Dict, Reference]] = Field(
-        alias="schema"
+        None, alias="schema"
     )  # schema can take in a `.schema()` dict value from pydantic
-    example: Optional[Any]
-    examples: Optional[Dict[str, Union[Example, Reference]]]
-    content: Optional[Dict[str, MediaType]]  # For more complex values - unused for now.
-
-    class Config:
-        allow_population_by_field_name = True
+    example: Optional[Any] = None
+    examples: Optional[Dict[str, Union[Example, Reference]]] = None
+    content: Optional[Dict[str, MediaType]] = None  # For more complex values - unused for now.
+    model_config = ConfigDict(populate_by_name=True)
 
     @classmethod
     def to_parameters(
@@ -343,15 +333,15 @@ class Parameter(BaseModel):
         return params
 
 class RequestBody(BaseModel):
-    description: Optional[str]
+    description: Optional[str] = None
     content: Dict[str, MediaType] = {}
     required: bool = False
 
 class Response(BaseModel):
     description: str = ""
-    headers: Optional[Dict[str, Union[Header, Reference]]]
-    content: Optional[Dict[str, MediaType]]
-    links: Optional[Dict[str, Union[Link, Reference]]]
+    headers: Optional[Dict[str, Union[Header, Reference]]] = None
+    content: Optional[Dict[str, MediaType]] = None
+    links: Optional[Dict[str, Union[Link, Reference]]] = None
 
     @classmethod
     def _from(
@@ -385,20 +375,20 @@ class Response(BaseModel):
 Responses = Dict[str, Response]
 
 class Operation(BaseModel):
-    tags: Optional[List[str]]
-    summary: Optional[str]
-    description: Optional[str]
-    externalDocs: Optional[ExternalDocs]
-    operationId: Optional[str]
+    tags: Optional[List[str]] = None
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    externalDocs: Optional[ExternalDocs] = None
+    operationId: Optional[str] = None
     parameters: List[Union[Parameter, Reference]] = []
-    requestBody: Optional[Union[RequestBody, Reference]]
+    requestBody: Optional[Union[RequestBody, Reference]] = None
     responses: Responses = {}
     callbacks: Optional[
         Dict[str, Union[Callback, Reference]]
-    ]  # TODO: callbacks Not implemented yet
+    ] = None  # TODO: callbacks Not implemented yet
     deprecated: bool = False
-    security: Optional[List[SecurityRequirement]]
-    servers: Optional[List[Server]]
+    security: Optional[List[SecurityRequirement]] = None
+    servers: Optional[List[Server]] = None
 
     def _extract_operation_id(self, view: Type, http_method: HttpMethod):
 
@@ -737,24 +727,22 @@ class Operation(BaseModel):
         return operation
 
 class Path(BaseModel):
-    summary: Optional[str]
-    description: Optional[str]
-    get: Optional[Operation]
-    put: Optional[Operation]
-    post: Optional[Operation]
-    delete: Optional[Operation]
-    options: Optional[Operation]
-    head: Optional[Operation]
-    patch: Optional[Operation]
-    trace: Optional[Operation]
-    servers: Optional[List[Server]]  # Not implemented - Done at operation level
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    get: Optional[Operation] = None
+    put: Optional[Operation] = None
+    post: Optional[Operation] = None
+    delete: Optional[Operation] = None
+    options: Optional[Operation] = None
+    head: Optional[Operation] = None
+    patch: Optional[Operation] = None
+    trace: Optional[Operation] = None
+    servers: Optional[List[Server]] = None  # Not implemented - Done at operation level
     parameters: List[
         Union[Parameter, Reference]
     ] = []  # Not implemented - Done at operation level
-    ref_: Optional[str] = Field(alias="$ref")  # Not implemented
-
-    class Config:
-        allow_population_by_field_name = True
+    ref_: Optional[str] = Field(None, alias="$ref")  # Not implemented
+    model_config = ConfigDict(populate_by_name=True)
 
     @classmethod
     def create(cls, view: Type) -> "Path":
@@ -872,7 +860,7 @@ class Document(BaseModel):
     components: Components = Components()
     security: List[SecurityRequirement] = []
     tags: List[Tag] = []
-    externalDocs: Optional[ExternalDocs]
+    externalDocs: Optional[ExternalDocs] = None
 
     @classmethod
     def generate(
