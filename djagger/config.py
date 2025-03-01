@@ -11,4 +11,4 @@ try:
     djagger_config = DjaggerConfig.model_validate(settings.DJAGGER_CONFIG)
 
 except (ImproperlyConfigured, AttributeError):
-    djagger_config = DjaggerConfig() # type: ignore
+    djagger_config = DjaggerConfig(global_prefix="")
